@@ -56,7 +56,7 @@ class DenseGrid:
     @property
     def ndim(self) -> int:
         return self.grid.shape[-1]
-
+ 
     @property
     def shape(self) -> typing.Tuple[int]:
         return self.grid.shape
