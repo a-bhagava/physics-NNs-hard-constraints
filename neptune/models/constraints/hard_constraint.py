@@ -65,7 +65,7 @@ class HardConstraintLayer(eqx.Module):
         initial_condition = pde.compute_pde_residual_terms(
             initial_condition, mu.initial_condition(pde_params), ic=True)
 
-        initial_condition = jax.tree_map(
+        initial_condition = jax.tree.map(
             lambda x: jnp.broadcast_to(
                 x, (u.shape[0], *x.shape[1:])), initial_condition
         )
@@ -94,7 +94,7 @@ class HardConstraintLayer(eqx.Module):
         # Mask out and sample N points from the domain applied to each individual term
         rngs, subkey = jax.random.split(rngs)
         mask = generate_single_mask(u.domain, cfg.num_sampled_points, subkey)
-        sampled_residual_terms = jax.tree_map(
+        sampled_residual_terms = jax.tree.map(
             partial(apply_mask, mask=mask), residual_terms)
 
         if cfg.mask_boundary_conditions: 

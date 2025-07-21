@@ -56,7 +56,7 @@ def global_gradient_norm(grad):
     return jax.tree_util.tree_reduce(
         lambda norm, x: norm + x,
         jax.tree_util.tree_leaves(
-            jax.tree_map(
+            jax.tree.map(
                 lambda x: jnp.linalg.norm(x) ** 2, grad)
         ),
         initializer=0.0
@@ -64,7 +64,7 @@ def global_gradient_norm(grad):
 
 
 def gradient_conjugate(grads):
-    return jax.tree_map(lambda x: jnp.conj(x), grads)
+    return jax.tree.map(lambda x: jnp.conj(x), grads)
 
 
 def add_loss_dict(aux_dict, losses, prefix):
@@ -181,7 +181,7 @@ def gen_train_step(value_and_grad_fn, optimizer, jit=True):
         (loss, metrics), grads = value_and_grad_fn(
             model, batch, rngs)
         grads = gradient_conjugate(grads)
-        grads = jax.tree_map(lambda x: jnp.nan_to_num(x), grads)
+        grads = jax.tree.map(lambda x: jnp.nan_to_num(x), grads)
         updates, optimizer_state = optimizer.update(
             grads, optimizer_state, model)
         model = eqx.apply_updates(model, updates)
@@ -197,4 +197,4 @@ def gen_train_step(value_and_grad_fn, optimizer, jit=True):
 
 
 def map_batch_to_jax(batch):
-    return jax.tree_map(lambda x: jnp.array(x), batch)
+    return jax.tree.map(lambda x: jnp.array(x), batch)

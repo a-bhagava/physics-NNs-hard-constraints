@@ -35,7 +35,7 @@ def split_payload_across_batch(payload: CallbackPayload):
     split_payloads = []
     for i in range(batch_size):
         predicted = payload.predicted[i]
-        batch = jax.tree_map(lambda x: x[i], payload.batch)
+        batch = jax.tree.map(lambda x: x[i], payload.batch)
         target = payload.target
         if target is not None:
             target = target[i]

@@ -1,6 +1,6 @@
 from enum import Enum
 import logging
-from jax.config import config
+from jax import config
 import tensorflow as tf
 import os
 

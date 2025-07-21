@@ -1,3 +1,3 @@
 name: "navier-stokes-2d"
-data_root: "/data/nithinc/final-pdes/NS-no-forcing"
+data_root: "data/navier-stokes-2D"
 batch_size: 4

@@ -134,11 +134,11 @@ class DiffusionSorption1D(AbstractPDE):
         _, sampled_residual_terms, initial_condition, predicted_initial_condition, boundary_condition_terms = args
 
         # Reweight relevant terms
-        sampled_residual_terms = jax.tree_map(
+        sampled_residual_terms = jax.tree.map(
             partial(self.reweight_matrix, weight), sampled_residual_terms)
         predicted_initial_condition = self.reweight_matrix(
             weight, predicted_initial_condition)
-        boundary_condition_terms = jax.tree_map(
+        boundary_condition_terms = jax.tree.map(
             partial(self.reweight_matrix, weight), boundary_condition_terms)
 
         ### RESIDUAL LOSS ###
@@ -155,7 +155,7 @@ class DiffusionSorption1D(AbstractPDE):
         ### BOUNDARY LOSS ###
         boundary_conditions = self.compute_boundary_conditions(
             boundary_condition_terms)
-        boundary_conditions = jax.tree_map(
+        boundary_conditions = jax.tree.map(
             lambda x: x.ravel(), boundary_conditions)
 
         ### RIDGE REGULARIZATION ###

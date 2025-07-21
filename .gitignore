@@ -161,3 +161,6 @@ array/**
 # W&B Artifacts
 artifacts
 artifacts/**
+
+# Data 
+data

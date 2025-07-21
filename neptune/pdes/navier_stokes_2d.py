@@ -148,7 +148,7 @@ class NavierStokes2D(AbstractPDE):
                                   args, mask, mask_size):
         sol, residual_terms, ic, predicted_initial_condition, boundary_condition_terms = args
         lhs, rhs = residual_terms
-        lhs = jax.tree_map(partial(self.reweight_matrix, weight), lhs)
+        lhs = jax.tree.map(partial(self.reweight_matrix, weight), lhs)
 
         lhs["ux"] += ic["ux"]
         lhs["uy"] += ic["uy"]

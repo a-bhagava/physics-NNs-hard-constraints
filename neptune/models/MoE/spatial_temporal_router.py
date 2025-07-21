@@ -33,19 +33,19 @@ class SpatialTemporalMoE(eqx.Module):
             predicted_solution, pde_params)
 
         # Partition residuals terms in expert splits
-        partitioned_residual_terms = jax.tree_map(partial(
+        partitioned_residual_terms = jax.tree.map(partial(
             dimension_partition, experts=self.cfg.num_experts), complete_residual_terms)
 
         # Shard residual terms across experts
-        partitioned_residual_terms = jax.tree_map(
+        partitioned_residual_terms = jax.tree.map(
             distributed.shard_array, partitioned_residual_terms)
 
         # Partition solution across experts
-        partitioned_predicted_solution = jax.tree_map(
+        partitioned_predicted_solution = jax.tree.map(
             partial(dimension_partition, experts=self.cfg.num_experts), predicted_solution)
 
         # Shard solution
-        partitioned_predicted_solution = jax.tree_map(
+        partitioned_predicted_solution = jax.tree.map(
             distributed.shard_array, partitioned_predicted_solution)
 
         # Residual values computed at the intitial condition
@@ -54,25 +54,25 @@ class SpatialTemporalMoE(eqx.Module):
             initial_condition, mu.initial_condition(pde_params), ic=True)
         # In the case of diffusion-sorption we broadcast the initial condition to each constraint
         if self.pde.name == 'Diffusion-Sorption1D':
-            initial_condition = jax.tree_map(
+            initial_condition = jax.tree.map(
                 distributed.replicate_array, initial_condition)
 
         # In the case of navier stokes, we would like to partition the initial condition
         else:
             # 1 x 64 x 64 x 1
             # Partition the IC terms
-            initial_condition = jax.tree_map(partial(
+            initial_condition = jax.tree.map(partial(
                 dimension_partition, experts=self.cfg.num_experts), initial_condition)
 
             # Shard the IC terms
-            initial_condition = jax.tree_map(
+            initial_condition = jax.tree.map(
                 distributed.shard_array, initial_condition)
 
         # Extract predicted IC
         predicted_initial_condition = mu.initial_condition(predicted_solution)
 
         # Replicate predicted initial condition
-        predicted_initial_condition = jax.tree_map(
+        predicted_initial_condition = jax.tree.map(
             distributed.replicate_array, predicted_initial_condition)
 
         # Compute global boundary condition terms 
@@ -80,7 +80,7 @@ class SpatialTemporalMoE(eqx.Module):
             predicted_solution, pde_params)
 
         # Replicate global boundary conditions
-        global_boundary_conditions = jax.tree_map(
+        global_boundary_conditions = jax.tree.map(
             distributed.replicate_array, global_boundary_conditions)
 
         # Compute RNG Keys for each expert + shard keys
@@ -88,7 +88,7 @@ class SpatialTemporalMoE(eqx.Module):
         constraint_rngs = distributed.shard_array(constraint_rngs)
 
         # Replicate PDE Parameters
-        pde_params = jax.tree_map(distributed.replicate_array, pde_params)
+        pde_params = jax.tree.map(distributed.replicate_array, pde_params)
 
         # Run experts
         if self.pde.name == 'Diffusion-Sorption1D':
@@ -127,6 +127,6 @@ class SpatialTemporalMoE(eqx.Module):
             )
 
         # Unpartition the predicted solution
-        out.solution = jax.tree_map(
+        out.solution = jax.tree.map(
             partial(dimension_unpartition, experts=self.cfg.num_experts), out.solution)
         return out

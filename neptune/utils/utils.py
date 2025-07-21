@@ -30,4 +30,4 @@ def pytree_print(pytree):
 
 def pytree_in_axes(pytree, in_axes):
     # Returns a pytree def with in_axes broadcasted
-    return jax.tree_map(lambda _: in_axes, pytree)
+    return jax.tree.map(lambda _: in_axes, pytree)
